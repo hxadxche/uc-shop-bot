@@ -299,7 +299,7 @@ async def handle_receipt_photo(message: Message, state: FSMContext):
         await message.answer("❌ Пожалуйста, отправьте фото чека.")
         return
 
-    ADMIN_ID = 1001953510  # Твой ID
+    ADMIN_ID = 1073756996  # Твой ID
     user = message.from_user
     caption = (
         f"📩 Новый платёж по карте!\n\n"
