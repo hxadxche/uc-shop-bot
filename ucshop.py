@@ -416,7 +416,7 @@ async def payment_umoney(message: Message, state: FSMContext):
 
     # ✅ Используем библиотеку yoomoney
     quickpay = Quickpay(
-        receiver="410019014512803",  # замените на ваш кошелёк
+        receiver="4100119206598101",  # замените на ваш кошелёк
         quickpay_form="shop",
         targets=f"Покупка UC-кодов (заказ #{order_id})",
         paymentType="AC",  # "AC" = банковская карта
