@@ -106,7 +106,13 @@ def yoomoney_webhook():
 @app.route("/")
 def home():
     return "Webhook is working", 200
+@app.route("/callback")
 
+def callback():
+
+    code = request.args.get("code")
+
+    return f"Код авторизации: {code}"
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
