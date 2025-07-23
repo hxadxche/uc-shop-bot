@@ -1,7 +1,7 @@
 import asyncio
 import sqlite3
 from datetime import datetime, timedelta
-
+from yoomoney import Quickpay
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.fsm.context import FSMContext
@@ -404,30 +404,28 @@ async def payment_umoney(message: Message, state: FSMContext):
         await message.answer("❌ Ошибка при создании заказа.")
         return
 
-    # Уникальный label с таймштампом, чтобы избежать кэша
+    # Уникальный label для отслеживания
     yoomoney_label = f"{user_id}_{order_id}_{int(datetime.now().timestamp())}"
 
-    # Обновляем в базе
+    # Обновляем заказ в базе
     cursor.execute(
         "UPDATE orders SET yoomoney_label = ? WHERE id = ?",
         (yoomoney_label, order_id)
     )
     conn.commit()
 
-    # Генерация ссылки на оплату
-    payment_url = (
-    f"https://yoomoney.ru/quickpay/confirm?"
-    f"receiver={YOOMONEY_WALLET}&"
-    f"quickpay-form=shop&"
-    f"targets=Покупка UC-кодов (заказ #{order_id})&"
-    f"sum={total_price}&"
-    f"label={user_id}_{order_id}&"
-    f"paymentType=AC"
+    # ✅ Используем библиотеку yoomoney
+    quickpay = Quickpay(
+        receiver="410019014512803",  # замените на ваш кошелёк
+        quickpay_form="shop",
+        targets=f"Покупка UC-кодов (заказ #{order_id})",
+        paymentType="AC",  # "AC" = банковская карта
+        label=yoomoney_label,
+        sum=total_price,
     )
 
-
     pay_kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="💳 Оплатить через ЮMoney", url=payment_url)],
+        [InlineKeyboardButton(text="💳 Оплатить через ЮMoney", url=quickpay.redirected_url)],
         [InlineKeyboardButton(text="❌ Отменить", callback_data="cancel_order")]
     ])
 
